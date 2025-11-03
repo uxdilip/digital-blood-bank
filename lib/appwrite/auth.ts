@@ -6,7 +6,7 @@ export const authService = {
     // Register new user
     async register(data: RegisterData) {
         try {
-            // Create Appwrite account
+            // Create Appwrite account first (no need to delete session - user is not authenticated yet)
             const response = await account.create(
                 ID.unique(),
                 data.email,
@@ -14,7 +14,10 @@ export const authService = {
                 data.name
             );
 
-            // Create user document in database
+            // Create session immediately after account creation
+            const session = await account.createEmailPasswordSession(data.email, data.password);
+
+            // Now create user document in database (with authenticated session)
             await databases.createDocument(
                 appwriteConfig.databaseId,
                 appwriteConfig.collections.users,
@@ -30,19 +33,37 @@ export const authService = {
                 }
             );
 
-            // Create session
-            await account.createEmailPasswordSession(data.email, data.password);
-
             return { success: true, userId: response.$id };
         } catch (error: any) {
             console.error('Registration error:', error);
-            throw new Error(error.message || 'Registration failed');
+
+            // Handle specific error cases with user-friendly messages
+            if (error.code === 409) {
+                throw new Error('An account with this email already exists. Please login instead.');
+            } else if (error.message?.includes('already exists')) {
+                throw new Error('This email is already registered. Please login instead.');
+            } else if (error.code === 401) {
+                throw new Error('Authentication failed. Please try again.');
+            }
+
+            throw new Error(error.message || 'Registration failed. Please try again.');
         }
     },
 
     // Login user
     async login(data: LoginData) {
         try {
+            // Check if there's an existing session and delete it
+            try {
+                const currentSession = await account.getSession('current');
+                if (currentSession) {
+                    await account.deleteSession('current');
+                }
+            } catch (error) {
+                // No session exists, continue
+            }
+
+            // Create new session
             const session = await account.createEmailPasswordSession(
                 data.email,
                 data.password
@@ -50,7 +71,13 @@ export const authService = {
             return { success: true, session };
         } catch (error: any) {
             console.error('Login error:', error);
-            throw new Error(error.message || 'Login failed');
+
+            // Handle specific error cases
+            if (error.code === 401) {
+                throw new Error('Invalid email or password. Please try again.');
+            }
+
+            throw new Error(error.message || 'Login failed. Please try again.');
         }
     },
 

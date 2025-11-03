@@ -9,6 +9,7 @@ export const appwriteConfig = {
         bloodBanks: process.env.NEXT_PUBLIC_APPWRITE_BLOOD_BANKS_COLLECTION_ID!,
         inventory: process.env.NEXT_PUBLIC_APPWRITE_INVENTORY_COLLECTION_ID!,
         sosRequests: process.env.NEXT_PUBLIC_APPWRITE_SOS_REQUESTS_COLLECTION_ID!,
+        sosResponses: process.env.NEXT_PUBLIC_APPWRITE_SOS_RESPONSES_COLLECTION_ID!,
         appointments: process.env.NEXT_PUBLIC_APPWRITE_APPOINTMENTS_COLLECTION_ID!,
     },
     storageBucketId: process.env.NEXT_PUBLIC_APPWRITE_STORAGE_BUCKET_ID!,

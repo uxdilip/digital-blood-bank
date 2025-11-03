@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Bell, Calendar, Droplet, Heart } from 'lucide-react';
+import Link from 'next/link';
 
 export default function DonorDashboard() {
     const { user } = useAuth();
@@ -78,11 +79,11 @@ export default function DonorDashboard() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-center py-8 text-gray-500">
-                            <Bell className="h-12 w-12 mx-auto mb-2 text-gray-400" />
-                            <p>No active SOS nearby</p>
-                            <p className="text-sm mt-1">You'll be notified when there's an emergency request</p>
-                        </div>
+                        <Link href="/dashboard/donor/sos">
+                            <Button className="w-full bg-red-600 hover:bg-red-700">
+                                View Emergency Requests
+                            </Button>
+                        </Link>
                     </CardContent>
                 </Card>
 
@@ -131,9 +132,11 @@ export default function DonorDashboard() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Button variant="outline">
-                        Update Profile
-                    </Button>
+                    <Link href="/dashboard/profile/edit">
+                        <Button variant="outline">
+                            Update Profile
+                        </Button>
+                    </Link>
                 </CardContent>
             </Card>
         </div>

@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Package, Calendar, MapPin, CheckCircle } from 'lucide-react';
+import Link from 'next/link';
 
 export default function BloodBankDashboard() {
     const { user } = useAuth();
@@ -135,9 +136,11 @@ export default function BloodBankDashboard() {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Button variant="outline">
-                        Complete Profile
-                    </Button>
+                    <Link href="/dashboard/blood_bank/setup">
+                        <Button variant="outline">
+                            Complete Profile
+                        </Button>
+                    </Link>
                 </CardContent>
             </Card>
         </div>

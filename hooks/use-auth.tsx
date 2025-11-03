@@ -41,9 +41,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     async function login(email: string, password: string) {
         try {
+            console.log('🔐 Starting login...');
             await authService.login({ email, password });
-            await checkAuth();
+            console.log('✅ Login successful, fetching user data...');
+
+            // Get the user document to access role and redirect
+            const accountData = await authService.getCurrentUser();
+            console.log('👤 Account data:', accountData);
+
+            if (accountData) {
+                const userDoc = await authService.getUserDocument(accountData.$id);
+                console.log('📄 User document:', userDoc);
+
+                if (userDoc) {
+                    setUser(userDoc);
+                    const dashboardUrl = `/dashboard/${userDoc.role}`;
+                    console.log('🚀 Redirecting to:', dashboardUrl);
+
+                    // Use window.location for immediate redirect
+                    window.location.href = dashboardUrl;
+                }
+            }
         } catch (error: any) {
+            console.error('❌ Login error:', error);
             throw error;
         }
     }
@@ -51,7 +71,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async function register(data: any) {
         try {
             await authService.register(data);
-            await checkAuth();
+
+            // Get the user document to access role and redirect
+            const accountData = await authService.getCurrentUser();
+            if (accountData) {
+                const userDoc = await authService.getUserDocument(accountData.$id);
+                if (userDoc) {
+                    setUser(userDoc);
+                    // Redirect to role-based dashboard
+                    router.push(`/dashboard/${userDoc.role}`);
+                }
+            }
         } catch (error: any) {
             throw error;
         }

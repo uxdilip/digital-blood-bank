@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
@@ -16,8 +16,15 @@ export default function LoginPage() {
         password: '',
     });
     const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
+    const { login, user } = useAuth();
     const router = useRouter();
+
+    // Redirect if already logged in
+    useEffect(() => {
+        if (user) {
+            router.push(`/dashboard/${user.role}`);
+        }
+    }, [user, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,10 +38,10 @@ export default function LoginPage() {
         try {
             await login(formData.email, formData.password);
             toast.success('Logged in successfully!');
-            router.push('/dashboard');
+            // Don't set loading to false here - let the redirect happen
         } catch (error: any) {
+            console.error('Login error in component:', error);
             toast.error(error.message || 'Login failed');
-        } finally {
             setLoading(false);
         }
     };

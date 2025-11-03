@@ -6,15 +6,41 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Droplet, LogOut, User, Bell } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function DashboardLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const { user, logout } = useAuth();
+    const { user, logout, loading } = useAuth();
     const pathname = usePathname();
+    const router = useRouter();
+
+    // Protect dashboard routes - redirect to login if not authenticated
+    useEffect(() => {
+        if (!loading && !user) {
+            router.push('/login');
+        }
+    }, [user, loading, router]);
+
+    // Show loading state while checking authentication
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <Droplet className="h-12 w-12 text-red-600 animate-pulse mx-auto mb-4" />
+                    <p className="text-gray-600">Loading...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Don't render dashboard if no user
+    if (!user) {
+        return null;
+    }
 
     const getInitials = (name: string) => {
         return name

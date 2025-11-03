@@ -2,25 +2,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl;
-
-    // Public routes that don't require authentication
-    const publicRoutes = ['/', '/login', '/register', '/verify-email'];
-    const isPublicRoute = publicRoutes.some(route => pathname === route);
-
-    // Check if user has session cookie
-    const session = request.cookies.get('a_session_' + process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID);
-
-    // Redirect to login if accessing protected route without session
-    if (!isPublicRoute && !session) {
-        return NextResponse.redirect(new URL('/login', request.url));
-    }
-
-    // Redirect to dashboard if accessing auth pages with active session
-    if ((pathname === '/login' || pathname === '/register') && session) {
-        return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
-
+    // Allow all requests - client-side auth will handle protection
+    // This is necessary because Appwrite browser SDK uses localStorage, not cookies
     return NextResponse.next();
 }
 

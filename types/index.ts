@@ -12,6 +12,15 @@ export interface User {
     name: string;
     role: UserRole;
     isVerified: boolean;
+    profilePhoto?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    pincode?: string;
+    latitude?: number;
+    longitude?: number;
+    emergencyContact?: string;
+    emergencyContactName?: string;
     location?: {
         lat: number;
         lng: number;
@@ -25,12 +34,15 @@ export interface User {
 export interface Donor {
     $id: string;
     userId: string;
-    bloodGroup: BloodGroup;
+    bloodGroup?: BloodGroup;
     lastDonationDate?: string;
     isEligible: boolean;
     donationCount: number;
     isAvailable: boolean;
     notificationsEnabled: boolean;
+    weight?: number;
+    age?: number;
+    medicallyEligible?: boolean;
     documents?: string[]; // File IDs
     createdAt: string;
     updatedAt: string;
@@ -40,20 +52,25 @@ export interface Donor {
 export interface BloodBank {
     $id: string;
     userId: string;
-    name: string;
-    licenseNumber: string;
-    address: string;
-    location: {
+    name?: string;
+    organizationName?: string;
+    licenseNumber?: string;
+    address?: string;
+    location?: {
         lat: number;
         lng: number;
     };
-    contactEmail: string;
-    contactPhone: string;
-    operatingHours: {
+    contactEmail?: string;
+    contactPhone?: string;
+    contactPerson?: string;
+    contactPersonPhone?: string;
+    operatingHours?: string | {
         open: string;
         close: string;
         days: string[];
     };
+    facilities?: string[];
+    website?: string;
     isVerified: boolean;
     documents?: string[]; // File IDs
     createdAt: string;

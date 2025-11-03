@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
@@ -23,8 +23,15 @@ export default function RegisterPage() {
         role: '' as UserRole,
     });
     const [loading, setLoading] = useState(false);
-    const { register } = useAuth();
+    const { register, user } = useAuth();
     const router = useRouter();
+
+    // Redirect if already logged in
+    useEffect(() => {
+        if (user) {
+            router.push(`/dashboard/${user.role}`);
+        }
+    }, [user, router]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

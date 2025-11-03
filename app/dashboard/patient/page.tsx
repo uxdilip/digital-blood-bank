@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Bell, Search, Calendar, MapPin } from 'lucide-react';
+import Link from 'next/link';
 
 export default function PatientDashboard() {
     const { user } = useAuth();
@@ -29,9 +30,11 @@ export default function PatientDashboard() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Button className="w-full bg-red-600 hover:bg-red-700">
-                            Create Emergency SOS
-                        </Button>
+                        <Link href="/dashboard/patient/sos/create">
+                            <Button className="w-full bg-red-600 hover:bg-red-700">
+                                Create Emergency SOS
+                            </Button>
+                        </Link>
                     </CardContent>
                 </Card>
 
@@ -56,8 +59,17 @@ export default function PatientDashboard() {
             {/* Recent Activity */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Recent SOS Requests</CardTitle>
-                    <CardDescription>Your emergency blood requests</CardDescription>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <CardTitle>Recent SOS Requests</CardTitle>
+                            <CardDescription>Your emergency blood requests</CardDescription>
+                        </div>
+                        <Link href="/dashboard/patient/sos/my-requests">
+                            <Button variant="outline" size="sm">
+                                View All
+                            </Button>
+                        </Link>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <div className="text-center py-8 text-gray-500">
@@ -81,9 +93,11 @@ export default function PatientDashboard() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <Button variant="outline">
-                            Update Location
-                        </Button>
+                        <Link href="/dashboard/profile/edit">
+                            <Button variant="outline">
+                                Update Location
+                            </Button>
+                        </Link>
                     </CardContent>
                 </Card>
             )}
