@@ -81,7 +81,7 @@ export default function DonorSOSDetailsPage() {
     const handleRespond = async () => {
         if (!user || !sos) return;
 
-        if (sos.status !== 'Active') {
+        if (sos.status !== 'active') {
             toast.error('This SOS request is no longer active');
             return;
         }
@@ -129,11 +129,11 @@ export default function DonorSOSDetailsPage() {
             </div>
 
             {/* Status Alert */}
-            {sos.status !== 'Active' && (
+            {sos.status !== 'active' && (
                 <Alert className="mb-6 border-yellow-200 bg-yellow-50">
                     <AlertCircle className="h-4 w-4 text-yellow-600" />
                     <AlertDescription className="text-yellow-800">
-                        This request is <strong>{sos.status.toLowerCase()}</strong> and no longer accepting responses.
+                        This request is <strong>{sos.status}</strong> and no longer accepting responses.
                     </AlertDescription>
                 </Alert>
             )}
@@ -265,7 +265,7 @@ export default function DonorSOSDetailsPage() {
                 )}
 
                 {/* Response Form */}
-                {!response && sos.status === 'Active' && (
+                {!response && sos.status === 'active' && (
                     <Card className="border-red-200">
                         <CardHeader>
                             <CardTitle className="text-red-600">Respond to This Emergency</CardTitle>

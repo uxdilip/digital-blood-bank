@@ -14,8 +14,8 @@ const BLOOD_COMPATIBILITY: { [key: string]: string[] } = {
     'O-': ['O-']
 };
 
-export type UrgencyLevel = 'Critical' | 'Urgent' | 'Normal';
-export type SOSStatus = 'Active' | 'Fulfilled' | 'Expired' | 'Cancelled';
+export type UrgencyLevel = 'critical' | 'urgent' | 'normal';
+export type SOSStatus = 'active' | 'fulfilled' | 'cancelled';
 
 export interface SOSRequest {
     $id: string;
@@ -62,7 +62,7 @@ export async function createSOSRequest(data: {
             appwriteConfig.collections.sosRequests,
             [
                 Query.equal('patientId', data.patientId),
-                Query.equal('status', 'Active')
+                Query.equal('status', 'active')
             ]
         );
 
@@ -79,10 +79,11 @@ export async function createSOSRequest(data: {
             appwriteConfig.collections.sosRequests,
             ID.unique(),
             {
+                requesterId: data.patientId, // Required by schema
                 patientId: data.patientId,
                 bloodGroup: data.bloodGroup,
                 unitsNeeded: data.unitsNeeded,
-                urgency: data.urgency,
+                urgency: data.urgency.toLowerCase(), // Convert to lowercase (critical, urgent, normal)
                 hospitalName: data.hospitalName,
                 hospitalAddress: data.hospitalAddress,
                 latitude: data.latitude,
@@ -90,7 +91,11 @@ export async function createSOSRequest(data: {
                 contactPerson: data.contactPerson,
                 contactPhone: data.contactPhone,
                 medicalNotes: data.medicalNotes || '',
-                status: 'Active',
+                location: `${data.hospitalName}, ${data.hospitalAddress}`, // Required by schema
+                description: data.medicalNotes || '', // Required by schema
+                radiusKm: 25, // Default radius
+                respondedDonors: [], // Empty array initially
+                status: 'active', // Lowercase: active, fulfilled, cancelled
                 responseCount: 0,
                 expiresAt: expiresAt.toISOString(),
                 createdAt: new Date().toISOString(),
@@ -169,7 +174,7 @@ export async function getNearbySOSRequests(
             appwriteConfig.databaseId,
             appwriteConfig.collections.sosRequests,
             [
-                Query.equal('status', 'Active'),
+                Query.equal('status', 'active'),
                 Query.orderDesc('createdAt'),
                 Query.limit(100) // Limit to prevent large queries
             ]
@@ -194,8 +199,14 @@ export async function getNearbySOSRequests(
             .filter(req => req.distance <= radiusKm)
             .sort((a, b) => {
                 // Sort by urgency first, then distance
-                const urgencyOrder = { Critical: 0, Urgent: 1, Normal: 2 };
-                const urgencyDiff = urgencyOrder[a.urgency as UrgencyLevel] - urgencyOrder[b.urgency as UrgencyLevel];
+                const urgencyOrder: Record<string, number> = {
+                    critical: 0,
+                    urgent: 1,
+                    normal: 2
+                };
+                const aUrgency = urgencyOrder[a.urgency.toLowerCase()] ?? 2;
+                const bUrgency = urgencyOrder[b.urgency.toLowerCase()] ?? 2;
+                const urgencyDiff = aUrgency - bUrgency;
                 if (urgencyDiff !== 0) return urgencyDiff;
                 return a.distance - b.distance;
             });
@@ -276,7 +287,7 @@ export async function getAllActiveSOSRequests(): Promise<SOSRequest[]> {
             appwriteConfig.databaseId,
             appwriteConfig.collections.sosRequests,
             [
-                Query.equal('status', 'Active'),
+                Query.equal('status', 'active'),
                 Query.orderDesc('createdAt')
             ]
         );
@@ -300,14 +311,14 @@ export async function expireOldRequests(): Promise<number> {
             appwriteConfig.databaseId,
             appwriteConfig.collections.sosRequests,
             [
-                Query.equal('status', 'Active'),
+                Query.equal('status', 'active'),
                 Query.lessThan('expiresAt', now)
             ]
         );
 
         let expiredCount = 0;
         for (const doc of response.documents) {
-            await updateSOSStatus(doc.$id, 'Expired');
+            await updateSOSStatus(doc.$id, 'cancelled'); // Auto-expire as cancelled
             expiredCount++;
         }
 

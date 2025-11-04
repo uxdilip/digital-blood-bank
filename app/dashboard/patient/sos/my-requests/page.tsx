@@ -17,7 +17,7 @@ export default function MyRequestsPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [requests, setRequests] = useState<SOSRequest[]>([]);
-    const [activeTab, setActiveTab] = useState<SOSStatus | 'All'>('Active');
+    const [activeTab, setActiveTab] = useState<SOSStatus | 'all'>('active');
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -59,26 +59,24 @@ export default function MyRequestsPage() {
         return null;
     }
 
-    const filterByStatus = (status: SOSStatus | 'All') => {
-        if (status === 'All') return requests;
+    const filterByStatus = (status: SOSStatus | 'all') => {
+        if (status === 'all') return requests;
         return requests.filter(req => req.status === status);
     };
 
     const getStatusColor = (status: SOSStatus) => {
         switch (status) {
-            case 'Active': return 'bg-green-100 text-green-800 border-green-300';
-            case 'Fulfilled': return 'bg-blue-100 text-blue-800 border-blue-300';
-            case 'Expired': return 'bg-gray-100 text-gray-800 border-gray-300';
-            case 'Cancelled': return 'bg-red-100 text-red-800 border-red-300';
+            case 'active': return 'bg-green-100 text-green-800 border-green-300';
+            case 'fulfilled': return 'bg-blue-100 text-blue-800 border-blue-300';
+            case 'cancelled': return 'bg-red-100 text-red-800 border-red-300';
         }
     };
 
     const statusCounts = {
-        All: requests.length,
-        Active: requests.filter(r => r.status === 'Active').length,
-        Fulfilled: requests.filter(r => r.status === 'Fulfilled').length,
-        Expired: requests.filter(r => r.status === 'Expired').length,
-        Cancelled: requests.filter(r => r.status === 'Cancelled').length,
+        all: requests.length,
+        active: requests.filter(r => r.status === 'active').length,
+        fulfilled: requests.filter(r => r.status === 'fulfilled').length,
+        cancelled: requests.filter(r => r.status === 'cancelled').length,
     };
 
     return (
@@ -122,25 +120,22 @@ export default function MyRequestsPage() {
                 </Card>
             ) : (
                 <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as any)} className="space-y-4">
-                    <TabsList className="grid w-full grid-cols-5">
-                        <TabsTrigger value="All">
-                            All ({statusCounts.All})
+                    <TabsList className="grid w-full grid-cols-4">
+                        <TabsTrigger value="all">
+                            All ({statusCounts.all})
                         </TabsTrigger>
-                        <TabsTrigger value="Active">
-                            Active ({statusCounts.Active})
+                        <TabsTrigger value="active">
+                            Active ({statusCounts.active})
                         </TabsTrigger>
-                        <TabsTrigger value="Fulfilled">
-                            Fulfilled ({statusCounts.Fulfilled})
+                        <TabsTrigger value="fulfilled">
+                            Fulfilled ({statusCounts.fulfilled})
                         </TabsTrigger>
-                        <TabsTrigger value="Expired">
-                            Expired ({statusCounts.Expired})
-                        </TabsTrigger>
-                        <TabsTrigger value="Cancelled">
-                            Cancelled ({statusCounts.Cancelled})
+                        <TabsTrigger value="cancelled">
+                            Cancelled ({statusCounts.cancelled})
                         </TabsTrigger>
                     </TabsList>
 
-                    {(['All', 'Active', 'Fulfilled', 'Expired', 'Cancelled'] as const).map(status => (
+                    {(['all', 'active', 'fulfilled', 'cancelled'] as const).map(status => (
                         <TabsContent key={status} value={status} className="space-y-4">
                             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {filterByStatus(status).map(sos => (
@@ -163,7 +158,7 @@ export default function MyRequestsPage() {
                             {filterByStatus(status).length === 0 && (
                                 <Card>
                                     <CardContent className="py-12 text-center text-muted-foreground">
-                                        No {status.toLowerCase()} requests
+                                        No {status === 'all' ? '' : status} requests
                                     </CardContent>
                                 </Card>
                             )}

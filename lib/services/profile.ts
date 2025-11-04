@@ -1,4 +1,4 @@
-import { databases, storage, ID } from '@/lib/appwrite/config';
+import { databases, storage, ID, Query } from '@/lib/appwrite/config';
 import { appwriteConfig } from '@/lib/appwrite/env';
 import { User } from '@/types';
 
@@ -89,8 +89,7 @@ export async function getDonorProfile(userId: string): Promise<any | null> {
             appwriteConfig.databaseId,
             appwriteConfig.collections.donors,
             [
-                // Query by userId field, not document ID
-                `userId=${userId}`
+                Query.equal('userId', userId)
             ]
         );
 
@@ -114,7 +113,7 @@ export async function getBloodBankProfile(userId: string): Promise<any | null> {
             appwriteConfig.databaseId,
             appwriteConfig.collections.bloodBanks,
             [
-                `userId=${userId}`
+                Query.equal('userId', userId)
             ]
         );
 

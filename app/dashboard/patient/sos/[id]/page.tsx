@@ -103,7 +103,7 @@ export default function PatientSOSDetailsPage() {
 
         setUpdating(true);
         try {
-            await updateSOSStatus(sos.$id, 'Fulfilled', new Date().toISOString());
+            await updateSOSStatus(sos.$id, 'fulfilled', new Date().toISOString());
             toast.success('SOS request marked as fulfilled');
             await loadSOSDetails();
         } catch (error) {
@@ -118,7 +118,7 @@ export default function PatientSOSDetailsPage() {
 
         setUpdating(true);
         try {
-            await updateSOSStatus(sos.$id, 'Cancelled');
+            await updateSOSStatus(sos.$id, 'cancelled');
             toast.success('SOS request cancelled');
             await loadSOSDetails();
         } catch (error) {
@@ -316,7 +316,7 @@ export default function PatientSOSDetailsPage() {
                 </Card>
 
                 {/* Actions */}
-                {sos.status === 'Active' && (
+                {sos.status === 'active' && (
                     <div className="flex gap-4">
                         <AlertDialog>
                             <AlertDialogTrigger asChild>

@@ -11,6 +11,9 @@ interface UrgencyBadgeProps {
 }
 
 export function UrgencyBadge({ urgency, showIcon = true, className = '' }: UrgencyBadgeProps) {
+    // Normalize urgency to handle both "Critical" and "critical" formats
+    const normalizedUrgency = urgency.charAt(0).toUpperCase() + urgency.slice(1).toLowerCase();
+
     const urgencyConfig = {
         Critical: {
             color: 'bg-red-100 text-red-800 border-red-300',
@@ -29,7 +32,9 @@ export function UrgencyBadge({ urgency, showIcon = true, className = '' }: Urgen
         }
     };
 
-    const config = urgencyConfig[urgency];
+    const config = urgencyConfig[normalizedUrgency as 'Critical' | 'Urgent' | 'Normal'];
+    if (!config) return null;
+
     const Icon = config.icon;
 
     return (
